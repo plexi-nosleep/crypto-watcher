@@ -1,4 +1,4 @@
-# SolWatcher Mini App
+# Coin-Tracker Mini App
 
 A Telegram Mini App UI and FastAPI backend for the existing SolWatcher alert engine. The original `bot.py` remains available as a fallback while you migrate.
 
