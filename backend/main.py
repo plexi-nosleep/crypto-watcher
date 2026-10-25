@@ -6,6 +6,7 @@ from urllib.parse import parse_qsl
 import httpx
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 load_dotenv(); logging.basicConfig(level=logging.INFO); log=logging.getLogger('solwatcher')
@@ -56,6 +57,10 @@ async def lifespan(app):
  except asyncio.CancelledError:pass
  await client.aclose();client=None
 app=FastAPI(title='SolWatcher API',lifespan=lifespan)
+origins=[x.strip() for x in os.getenv('CORS_ORIGINS','').split(',') if x.strip()]
+if not origins:
+ origins=['https://plexi-nosleep.github.io']
+app.add_middleware(CORSMiddleware,allow_origins=origins,allow_methods=['*'],allow_headers=['*'])
 @app.get('/api/health')
 async def health():return {'ok':True}
 @app.get('/api/me')
@@ -133,6 +138,9 @@ async def scan():
   except Exception:log.exception('Alert evaluation failed: %s',a['id'])
 static=os.path.abspath(os.path.join(os.path.dirname(__file__),'..','frontend'))
 if os.path.isdir(static):app.mount('/',StaticFiles(directory=static,html=True),name='frontend')
+
+
+
 
 
 
